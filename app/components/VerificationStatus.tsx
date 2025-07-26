@@ -1,3 +1,4 @@
+ 
 "use client";
 
 import { useEffect, useState } from "react";
@@ -9,7 +10,7 @@ export default function VerificationStatus() {
     fetch("/api/verify")
       .then((res) => res.json())
       .then((data) => setStatus(data))
-      .catch((err) => console.error("Error fetching verification:", err));
+      .catch(() => setStatus({ verified: false, message: "Verification check failed" }));
   }, []);
 
   if (!status) return <p>Loading verification status...</p>;
@@ -19,7 +20,7 @@ export default function VerificationStatus() {
       {status.verified ? (
         <p style={{ color: "green" }}>✅ {status.message}</p>
       ) : (
-        <p style={{ color: "red" }}>❌ Verification pending</p>
+        <p style={{ color: "red" }}>❌ Verification Required</p>
       )}
     </div>
   );
