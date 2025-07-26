@@ -1,5 +1,4 @@
-
-import VerificationStatus from "./components/VerificationStatus";
+import VerificationStatus from "./VerificationStatus";
 
 export default function HomePage() {
   return (
