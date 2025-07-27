@@ -20,7 +20,6 @@ export default function VendorDashboard() {
   const [offers, setOffers] = useState<Offer[]>([]);
   const [loadingOffers, setLoadingOffers] = useState(false);
 
-  // Fetch verification status
   useEffect(() => {
     fetch("/api/verify")
       .then((res) => res.json())
@@ -28,7 +27,6 @@ export default function VendorDashboard() {
       .catch((err) => console.error("Error fetching verification:", err));
   }, []);
 
-  // Fetch offers only if verified
   useEffect(() => {
     if (status?.verified) {
       setLoadingOffers(true);
@@ -45,7 +43,6 @@ export default function VendorDashboard() {
     }
   }, [status]);
 
-  // Handle Pre-order
   const handlePreOrder = (offer: Offer) => {
     fetch("/api/preorder", {
       method: "POST",
@@ -66,7 +63,6 @@ export default function VendorDashboard() {
         <>
           <p className="text-green-600 mb-4">✅ {status.message}</p>
           <h2 className="text-2xl font-bold mb-4">Supplier Offers</h2>
-
           {loadingOffers ? (
             <p>Loading offers...</p>
           ) : offers.length > 0 ? (
@@ -100,5 +96,8 @@ export default function VendorDashboard() {
           )}
         </>
       ) : (
-        <p className="text-red-600
-
+        <p className="text-red-600 mb-4">❌ Verification Required - Please upload your document.</p>
+      )}
+    </div>
+  );
+}
