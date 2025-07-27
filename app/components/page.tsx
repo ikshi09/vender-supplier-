@@ -1,19 +1,7 @@
-import VerificationStatus from "./VerificationStatus";
-
-export default function HomePage() {
-  return (
-    <div>
-      <h1>Welcome to Supplier Offers</h1>
-      <VerificationStatus />
-    </div>
-  );
-}
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import PreOrderHistory from "./PreOrderHistory";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 
 interface Offer {
   id: number;
@@ -31,7 +19,6 @@ export default function VendorDashboard() {
   const [status, setStatus] = useState<{ verified: boolean; message: string } | null>(null);
   const [offers, setOffers] = useState<Offer[]>([]);
   const [loadingOffers, setLoadingOffers] = useState(false);
-  const [profitLoss, setProfitLoss] = useState<string | null>(null);
 
   // Fetch verification status
   useEffect(() => {
@@ -57,21 +44,6 @@ export default function VendorDashboard() {
         });
     }
   }, [status]);
-
-  // Pre-order handler
-  const handlePreOrder = (offer: Offer) => {
-    const profit = offer.originalPrice - offer.finalPrice;
-    setProfitLoss(
-      `If you buy from supplier "${offer.supplierName}", you save ₹${profit} compared to market price.`
-    );
-
-    // Store order in dummy API (or localStorage as simulation)
-    const order = { productId: offer.id, timestamp: new Date().toISOString() };
-    const existingOrders = JSON.parse(localStorage.getItem("preOrders") || "[]");
-    existingOrders.push(order);
-    localStorage.setItem("preOrders", JSON.stringify(existingOrders));
-    alert(`Pre-order placed for ${offer.title}!`);
-  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -101,9 +73,6 @@ export default function VendorDashboard() {
                     <p className="text-sm text-gray-500">{offer.discountPercent}% OFF</p>
                     <p className="text-sm">Supplier: {offer.supplierName}</p>
                     <p className="text-xs text-gray-400">Valid until: {offer.validUntil}</p>
-                    <Button className="mt-3 w-full" onClick={() => handlePreOrder(offer)}>
-                      Pre-Order
-                    </Button>
                   </CardContent>
                 </Card>
               ))}
@@ -111,8 +80,6 @@ export default function VendorDashboard() {
           ) : (
             <p>No offers available at the moment.</p>
           )}
-          {profitLoss && <p className="mt-6 text-blue-600 font-semibold">{profitLoss}</p>}
-          <PreOrderHistory />
         </>
       ) : (
         <p className="text-red-600 mb-4">❌ Verification Required - Please upload your document.</p>
@@ -120,3 +87,4 @@ export default function VendorDashboard() {
     </div>
   );
 }
+
