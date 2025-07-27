@@ -16,23 +16,36 @@ interface Offer {
 }
 
 export default function VendorDashboard() {
+  const [status, setStatus] = useState<{ verified: boolean; message: string } | null>(null);
   const [offers, setOffers] = useState<Offer[]>([]);
   const [loadingOffers, setLoadingOffers] = useState(false);
 
+  // Fetch verification status
   useEffect(() => {
-    setLoadingOffers(true);
-    fetch("/api/offers")
+    fetch("/api/verify")
       .then((res) => res.json())
-      .then((data) => {
-        setOffers(data);
-        setLoadingOffers(false);
-      })
-      .catch((err) => {
-        console.error("Error fetching offers:", err);
-        setLoadingOffers(false);
-      });
+      .then((data) => setStatus(data))
+      .catch((err) => console.error("Error fetching verification:", err));
   }, []);
 
+  // Fetch offers only if verified
+  useEffect(() => {
+    if (status?.verified) {
+      setLoadingOffers(true);
+      fetch("/api/offers")
+        .then((res) => res.json())
+        .then((data) => {
+          setOffers(data);
+          setLoadingOffers(false);
+        })
+        .catch((err) => {
+          console.error("Error fetching offers:", err);
+          setLoadingOffers(false);
+        });
+    }
+  }, [status]);
+
+  // Handle Pre-order
   const handlePreOrder = (offer: Offer) => {
     fetch("/api/preorder", {
       method: "POST",
@@ -45,39 +58,47 @@ export default function VendorDashboard() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-4">Supplier Offers</h1>
+      <h1 className="text-3xl font-bold mb-4">Vendor Dashboard</h1>
 
-      {loadingOffers ? (
-        <p>Loading offers...</p>
-      ) : offers.length > 0 ? (
-        <div className="grid md:grid-cols-3 gap-6">
-          {offers.map((offer) => (
-            <Card key={offer.id} className="p-4 shadow-lg">
-              <CardHeader>
-                <CardTitle>{offer.title}</CardTitle>
-                <CardDescription>{offer.description}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p>
-                  <span className="line-through text-gray-500">₹{offer.originalPrice}</span>{" "}
-                  <span className="text-green-600 font-bold">₹{offer.finalPrice}</span>
-                </p>
-                <p className="text-sm text-gray-500">{offer.discountPercent}% OFF</p>
-                <p className="text-sm">Supplier: {offer.supplierName}</p>
-                <p className="text-xs text-gray-400">Valid until: {offer.validUntil}</p>
-                <button
-                  className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                  onClick={() => handlePreOrder(offer)}
-                >
-                  Pre-order
-                </button>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+      {status === null ? (
+        <p>Loading verification status...</p>
+      ) : status.verified ? (
+        <>
+          <p className="text-green-600 mb-4">✅ {status.message}</p>
+          <h2 className="text-2xl font-bold mb-4">Supplier Offers</h2>
+
+          {loadingOffers ? (
+            <p>Loading offers...</p>
+          ) : offers.length > 0 ? (
+            <div className="grid md:grid-cols-3 gap-6">
+              {offers.map((offer) => (
+                <Card key={offer.id} className="p-4 shadow-lg">
+                  <CardHeader>
+                    <CardTitle>{offer.title}</CardTitle>
+                    <CardDescription>{offer.description}</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <p>
+                      <span className="line-through text-gray-500">₹{offer.originalPrice}</span>{" "}
+                      <span className="text-green-600 font-bold">₹{offer.finalPrice}</span>
+                    </p>
+                    <p className="text-sm text-gray-500">{offer.discountPercent}% OFF</p>
+                    <p className="text-sm">Supplier: {offer.supplierName}</p>
+                    <p className="text-xs text-gray-400">Valid until: {offer.validUntil}</p>
+                    <button
+                      className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                      onClick={() => handlePreOrder(offer)}
+                    >
+                      Pre-order
+                    </button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <p>No offers available at the moment.</p>
+          )}
+        </>
       ) : (
-        <p>No offers available at the moment.</p>
-      )}
-    </div>
-  );
-}
+        <p className="text-red-600
+
