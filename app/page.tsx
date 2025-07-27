@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
@@ -15,7 +13,7 @@ export default function HomePage() {
           Connecting verified street food vendors with suppliers for discounted raw materials through PM SVANidhi loan
           benefits
         </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center mb-4">
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button asChild size="lg">
             <Link href="/auth/login?type=vendor">Join as Vendor</Link>
           </Button>
@@ -23,10 +21,6 @@ export default function HomePage() {
             <Link href="/auth/login?type=supplier">Join as Supplier</Link>
           </Button>
         </div>
-        {/* Go to Vendor Dashboard Button */}
-        <Button asChild size="lg" variant="secondary">
-          <Link href="/vendor">Go to Vendor Dashboard</Link>
-        </Button>
       </div>
 
       {/* Features */}
@@ -95,7 +89,13 @@ export default function HomePage() {
           </Button>
         </div>
       </div>
+
+      {/* Link to Supplier Offers */}
+      <div className="text-center mt-10">
+        <Button asChild>
+          <Link href="/vendor">View Supplier Offers</Link>
+        </Button>
+      </div>
     </div>
   );
 }
-
