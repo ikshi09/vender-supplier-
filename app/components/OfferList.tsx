@@ -21,7 +21,6 @@ interface OfferListProps {
 
 export default function OfferList({ offers, loading }: OfferListProps) {
   if (loading) return <p>Loading offers...</p>;
-
   if (!offers.length) return <p>No offers available.</p>;
 
   return (
@@ -51,4 +50,3 @@ export default function OfferList({ offers, loading }: OfferListProps) {
     </ul>
   );
 }
-

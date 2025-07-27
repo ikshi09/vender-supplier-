@@ -1,38 +1,77 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
-import OfferList, { Offer } from "../../components/OfferList";
+import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
-export default function VendorDashboard() {
-  const [offers, setOffers] = useState<Offer[]>([]);
-  const [loadingOffers, setLoadingOffers] = useState(true);
+export default function LoginPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const userType = searchParams.get("type") || "vendor"; // default to vendor
 
-  useEffect(() => {
-    fetch("/api/offers")
-      .then((res) => res.json())
-      .then((data) => {
-        setOffers(data);
-        setLoadingOffers(false);
-      })
-      .catch((err) => {
-        console.error("Error fetching offers:", err);
-        setLoadingOffers(false);
-      });
-  }, []);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      // Here you can add actual authentication API logic.
+      // For now, simulate login delay
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      if (userType === "vendor") {
+        router.push("/vendor");
+      } else if (userType === "supplier") {
+        router.push("/supplier");
+      } else {
+        alert("Unknown user type");
+      }
+    } catch (err) {
+      console.error("Login failed:", err);
+      alert("Login failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-4">
-        <Link href="/" className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">
-          ⬅ Back to Home
-        </Link>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="w-full max-w-md bg-white p-6 rounded shadow-md">
+        <h1 className="text-2xl font-bold mb-4">
+          {userType === "vendor" ? "Vendor Login" : "Supplier Login"}
+        </h1>
+        <form onSubmit={handleLogin} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium">Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="mt-1 block w-full border rounded px-3 py-2"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium">Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="mt-1 block w-full border rounded px-3 py-2"
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+          >
+            {loading ? "Logging in..." : "Login"}
+          </button>
+        </form>
       </div>
-
-      <h1 className="text-3xl font-bold mb-2 text-green-600">✅ Vendor Verified</h1>
-      <h2 className="text-2xl font-semibold mb-6">Supplier Offers</h2>
-
-      <OfferList offers={offers} loading={loadingOffers} />
     </div>
   );
 }
