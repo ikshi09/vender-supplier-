@@ -1,7 +1,7 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import Link from "next/link";
-import { Users, Store, Truck } from "lucide-react";
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import Link from "next/link"
+import { Users, Store, Truck } from "lucide-react"
 
 export default function HomePage() {
   return (
@@ -89,13 +89,6 @@ export default function HomePage() {
           </Button>
         </div>
       </div>
-
-      {/* Link to Supplier Offers */}
-      <div className="text-center mt-10">
-        <Button asChild>
-          <Link href="/vendor">View Supplier Offers</Link>
-        </Button>
-      </div>
     </div>
-  );
+  )
 }

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import OfferList, { Offer } from "@/components/OfferList";
+import OfferList, { Offer } from "../../components/OfferList";
 
 export default function SupplierDashboard() {
   const [offers, setOffers] = useState<Offer[]>([]);
@@ -15,8 +15,7 @@ export default function SupplierDashboard() {
         setOffers(data);
         setLoadingOffers(false);
       })
-      .catch((err) => {
-        console.error("Error fetching offers:", err);
+      .catch(() => {
         setLoadingOffers(false);
       });
   }, []);
@@ -35,5 +34,3 @@ export default function SupplierDashboard() {
     </div>
   );
 }
-
-
