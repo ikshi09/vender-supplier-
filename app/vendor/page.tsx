@@ -2,6 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 
 interface Offer {
@@ -18,10 +19,9 @@ interface Offer {
 
 export default function VendorDashboard() {
   const [offers, setOffers] = useState<Offer[]>([]);
-  const [loadingOffers, setLoadingOffers] = useState(false);
+  const [loadingOffers, setLoadingOffers] = useState(true);
 
   useEffect(() => {
-    setLoadingOffers(true);
     fetch("/api/offers")
       .then((res) => res.json())
       .then((data) => {
@@ -46,7 +46,17 @@ export default function VendorDashboard() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-4">Vendor Dashboard</h1>
+      {/* Back to Home */}
+      <div className="mb-4">
+        <Link
+          href="/"
+          className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+        >
+          ⬅ Back to Home
+        </Link>
+      </div>
+
+      <h1 className="text-3xl font-bold mb-4">Supplier Offers</h1>
 
       {loadingOffers ? (
         <p>Loading offers...</p>
