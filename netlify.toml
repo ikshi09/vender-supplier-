@@ -1,15 +1,6 @@
 [build] 
-  command = "npm run build"
-  publish = ".next"
-
-[build.environment]
-  NODE_VERSION = "18"
-  NEXT_TELEMETRY_DISABLED = "1"
-  NETLIFY_USE_CACHE = "false"
-
-[[plugins]]
-  package = "@netlify/plugin-nextjs"
-
-# Optional: Ignore cache during build
-[build.cache]
-  disabled = true
+  command = "npm run build" 
+  publish = ".next" 
+ECHO is on.
+[[plugins]] 
+  package = "@netlify/plugin-nextjs" 
