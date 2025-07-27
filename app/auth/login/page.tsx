@@ -116,3 +116,22 @@ export default function LoginPage() {
     </div>
   )
 }
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault()
+  setIsLoading(true)
+  setError("")
+
+  try {
+    const success = await login(email, password, userType)
+    if (success) {
+      router.push(userType === "vendor" ? "/vendor" : "/supplier/dashboard")
+    } else {
+      setError("Invalid credentials")
+    }
+  } catch (err) {
+    setError("Login failed. Please try again.")
+  } finally {
+    setIsLoading(false)
+  }
+}
+
