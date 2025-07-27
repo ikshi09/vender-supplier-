@@ -17,6 +17,8 @@ interface Offer {
 }
 
 export default function VendorDashboard() {
+  console.log("Build updated 🚀"); // Check Netlify build logs
+
   const [offers, setOffers] = useState<Offer[]>([]);
   const [loadingOffers, setLoadingOffers] = useState(true);
 
@@ -45,6 +47,11 @@ export default function VendorDashboard() {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      {/* Build Update Banner */}
+      <div className="mb-4 p-2 bg-yellow-300 text-black text-center rounded">
+        🚀 Build Updated – {new Date().toLocaleTimeString()}
+      </div>
+
       {/* Back to Home */}
       <div className="mb-4">
         <Link
