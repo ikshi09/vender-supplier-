@@ -1,0 +1,159 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+
+interface Offer {
+  id: number;
+  title: string;
+  description: string;
+  discountPercent: number;
+  originalPrice: number;
+  finalPrice: number;
+  supplierName: string;
+  category: string;
+  validUntil: string;
+}
+
+export default function VendorDashboard() {
+  const [status, setStatus] = useState<{ verified: boolean; message: string } | null>(null);
+  const [offers, setOffers] = useState<Offer[]>([]);
+  const [loadingOffers, setLoadingOffers] = useState(false);
+  const [selectedOffer, setSelectedOffer] = useState<Offer | null>(null);
+
+  // Fetch verification status
+  useEffect(() => {
+    fetch("/api/verify")
+      .then((res) => res.json())
+      .then((data) => setStatus(data))
+      .catch((err) => console.error("Error fetching verification:", err));
+  }, []);
+
+  // Fetch offers if verified
+  useEffect(() => {
+    if (status?.verified) {
+      setLoadingOffers(true);
+      fetch("/api/offers")
+        .then((res) => res.json())
+        .then((data) => {
+          // STEP: Filter only 1 supplier per category
+          const uniqueOffers = data.reduce((acc: Offer[], offer: Offer) => {
+            const exists = acc.find((o) => o.category === offer.category);
+            if (!exists) acc.push(offer);
+            return acc;
+          }, []);
+          setOffers(uniqueOffers);
+          setLoadingOffers(false);
+        })
+        .catch((err) => {
+          console.error("Error fetching offers:", err);
+          setLoadingOffers(false);
+        });
+    }
+  }, [status]);
+
+  // Handle Pre-order
+  const handlePreOrder = async () => {
+    if (!selectedOffer) return;
+
+    const response = await fetch("/api/preorder", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ productId: selectedOffer.id }),
+    });
+
+    const data = await response.json();
+    alert(`Pre-order placed successfully! (${data.message})`);
+  };
+
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-4">Vendor Dashboard</h1>
+
+      {/* Verification Status */}
+      {status === null ? (
+        <p>Loading verification status...</p>
+      ) : status.verified ? (
+        <>
+          <p className="text-green-600 mb-4">✅ {status.message}</p>
+          <h2 className="text-2xl font-bold mb-4">Available Supplier Offers</h2>
+          {loadingOffers ? (
+            <p>Loading offers...</p>
+          ) : offers.length > 0 ? (
+            <div className="grid md:grid-cols-3 gap-6">
+              {offers.map((offer) => (
+                <Card
+                  key={offer.id}
+                  onClick={() => setSelectedOffer(offer)}
+                  className={`cursor-pointer hover:shadow-lg transition ${
+                    selectedOffer?.id === offer.id ? "border-2 border-green-500" : ""
+                  }`}
+                >
+                  <CardHeader>
+                    <CardTitle>{offer.title}</CardTitle>
+                    <CardDescription>{offer.description}</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <p>
+                      <span className="line-through text-gray-500">₹{offer.originalPrice}</span>{" "}
+                      <span className="text-green-600 font-bold">₹{offer.finalPrice}</span>
+                    </p>
+                    <p className="text-sm text-gray-500">{offer.discountPercent}% OFF</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <p>No offers available at the moment.</p>
+          )}
+
+          {/* Supplier Details */}
+          {selectedOffer && (
+            <div className="mt-6 p-4 border rounded-lg bg-gray-50">
+              <h3 className="text-xl font-bold mb-2">Supplier Details</h3>
+              <p><strong>Supplier:</strong> {selectedOffer.supplierName}</p>
+              <p><strong>Category:</strong> {selectedOffer.category}</p>
+              <p><strong>Market Price:</strong> ₹{selectedOffer.originalPrice}</p>
+              <p><strong>Discounted Price:</strong> ₹{selectedOffer.finalPrice}</p>
+            </div>
+          )}
+
+          {/* Profit & Loss */}
+          {selectedOffer && (
+            <div className="mt-4 p-3 bg-white shadow rounded-lg">
+              <h4 className="font-semibold text-lg mb-2">Profit & Loss</h4>
+              <table className="w-full text-sm text-left">
+                <tbody>
+                  <tr>
+                    <td className="py-1">Market Price:</td>
+                    <td className="py-1 text-gray-700">₹{selectedOffer.originalPrice}</td>
+                  </tr>
+                  <tr>
+                    <td className="py-1">Supplier Price:</td>
+                    <td className="py-1 text-gray-700">₹{selectedOffer.finalPrice}</td>
+                  </tr>
+                  <tr className="font-bold">
+                    <td className="py-1">Your Savings:</td>
+                    <td className="py-1 text-green-600">
+                      ₹{selectedOffer.originalPrice - selectedOffer.finalPrice}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {/* Pre-Order Button */}
+          {selectedOffer && (
+            <Button className="mt-4" onClick={handlePreOrder}>
+              Pre-Order
+            </Button>
+          )}
+        </>
+      ) : (
+        <p className="text-red-600 mb-4">❌ Verification Required - Please upload your document.</p>
+      )}
+    </div>
+  );
+}
