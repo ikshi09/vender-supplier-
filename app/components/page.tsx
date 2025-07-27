@@ -20,7 +20,6 @@ export default function VendorDashboard() {
   const [offers, setOffers] = useState<Offer[]>([]);
   const [loadingOffers, setLoadingOffers] = useState(false);
 
-  // Fetch verification status
   useEffect(() => {
     fetch("/api/verify")
       .then((res) => res.json())
@@ -28,7 +27,6 @@ export default function VendorDashboard() {
       .catch((err) => console.error("Error fetching verification:", err));
   }, []);
 
-  // Fetch offers if verified
   useEffect(() => {
     if (status?.verified) {
       setLoadingOffers(true);
@@ -45,6 +43,16 @@ export default function VendorDashboard() {
     }
   }, [status]);
 
+  const handlePreOrder = (offer: Offer) => {
+    fetch("/api/preorder", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ productId: offer.id, timestamp: new Date().toISOString() }),
+    })
+      .then(() => alert(`Pre-order placed for ${offer.title}`))
+      .catch((err) => console.error("Pre-order failed:", err));
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-4">Supplier Dashboard</h1>
@@ -60,7 +68,7 @@ export default function VendorDashboard() {
           ) : offers.length > 0 ? (
             <div className="grid md:grid-cols-3 gap-6">
               {offers.map((offer) => (
-                <Card key={offer.id}>
+                <Card key={offer.id} className="p-4 shadow-lg">
                   <CardHeader>
                     <CardTitle>{offer.title}</CardTitle>
                     <CardDescription>{offer.description}</CardDescription>
@@ -73,6 +81,12 @@ export default function VendorDashboard() {
                     <p className="text-sm text-gray-500">{offer.discountPercent}% OFF</p>
                     <p className="text-sm">Supplier: {offer.supplierName}</p>
                     <p className="text-xs text-gray-400">Valid until: {offer.validUntil}</p>
+                    <button
+                      className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                      onClick={() => handlePreOrder(offer)}
+                    >
+                      Pre-order
+                    </button>
                   </CardContent>
                 </Card>
               ))}
