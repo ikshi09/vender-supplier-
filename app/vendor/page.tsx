@@ -1,3 +1,4 @@
+C:\Users\admin\Downloads\vendor-support-main\vendor-support-main\app>type vendor\page.tsx
 
 "use client";
 
@@ -52,7 +53,7 @@ export default function VendorDashboard() {
           href="/"
           className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
         >
-          ⬅ Back to Home
+          Γ¼à Back to Home
         </Link>
       </div>
 
@@ -70,8 +71,8 @@ export default function VendorDashboard() {
               </CardHeader>
               <CardContent>
                 <p>
-                  <span className="line-through text-gray-500">₹{offer.originalPrice}</span>{" "}
-                  <span className="text-green-600 font-bold">₹{offer.finalPrice}</span>
+                  <span className="line-through text-gray-500">Γé╣{offer.originalPrice}</span>{" "}
+                  <span className="text-green-600 font-bold">Γé╣{offer.finalPrice}</span>
                 </p>
                 <p className="text-sm text-gray-500">{offer.discountPercent}% OFF</p>
                 <p className="text-sm">Supplier: {offer.supplierName}</p>
